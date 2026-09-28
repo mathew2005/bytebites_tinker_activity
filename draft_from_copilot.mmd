@@ -1,0 +1,85 @@
+%% DRAFT 1 -- generated from bytebites_spec.md alone, no design reference attached.
+%% Kept for comparison only. See bytebites_design.mmd for the verified design.
+classDiagram
+    class User {
+        +int user_id
+        +String name
+        +String email
+        +bool is_verified
+        +verify() bool
+    }
+    class Customer {
+        +int customer_id
+        +String name
+        +String email
+        +String phone
+        +list~Order~ purchase_history
+        +datetime created_at
+        +float loyalty_points
+        +verify_user() bool
+        +add_to_history(order) void
+        +get_favorite_category() String
+    }
+    class Product {
+        <<abstract>>
+        +String name
+        +float price
+        +get_display_price() String
+    }
+    class MenuItem {
+        +int item_id
+        +String name
+        +float price
+        +String category
+        +float popularity
+        +bool is_available
+        +String description
+        +list~String~ allergens
+        +apply_discount(percent) float
+    }
+    class Menu {
+        +int menu_id
+        +String restaurant_name
+        +list~MenuItem~ items
+        +dict categories
+        +add_item(item) void
+        +remove_item(item_id) bool
+        +filter_by_category(category) list
+        +search(query) list
+        +get_top_rated(n) list
+    }
+    class Order {
+        +int order_id
+        +Customer customer
+        +list~MenuItem~ items
+        +String status
+        +datetime placed_at
+        +float tax_rate
+        +float tip
+        +add_item(item) void
+        +calculate_total() float
+        +calculate_tax() float
+        +apply_promo_code(code) bool
+        +cancel() void
+    }
+    class Payment {
+        +int payment_id
+        +Order order
+        +String method
+        +float amount
+        +process() bool
+        +refund() bool
+    }
+    class RecommendationEngine {
+        +Menu menu
+        +recommend_for(customer) list
+        +pair_with(item) MenuItem
+    }
+    Product <|-- MenuItem
+    User <|-- Customer
+    Customer "1" --> "*" Order : places
+    Order "1" --> "*" MenuItem : contains
+    Menu "1" --> "*" MenuItem : lists
+    Order "1" --> "1" Payment : paid by
+    RecommendationEngine --> Menu : reads
+    RecommendationEngine --> Customer : profiles
